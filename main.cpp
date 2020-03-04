@@ -3,6 +3,11 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include <memory>
+#include <string>
+
+#include "TVacMon.hpp"
+
 int kbhit(void)
 {
   struct termios oldt, newt;
@@ -29,4 +34,23 @@ int kbhit(void)
   return 0;
 }
 
-int main() { return 0; }
+int main(int argc, char **argv)
+{
+  auto timeInterval = 60;
+  auto portName = std::string("/dev/ttyUSB0");
+  for (auto i = 1; i < argc; i++) {
+    if (std::string(argv[i]) == "-t") {
+      timeInterval = atof(argv[++i]);
+    }
+    if (std::string(argv[i]) == "-p") {
+      portName = std::string((argv[++i]));
+    }
+  }
+
+  std::unique_ptr<TVacMon> monitor(new TVacMon());
+  monitor->SetPortName(portName);
+  monitor->SetTimeInterval(timeInterval);
+  monitor->InitPort();
+
+  return 0;
+}
