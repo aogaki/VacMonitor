@@ -1,3 +1,4 @@
+#include <TApplication.h>
 #include <TSystem.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -48,6 +49,8 @@ int main(int argc, char **argv)
       portName = std::string((argv[++i]));
     }
   }
+
+  TApplication app("testApp", &argc, argv);
 
   std::unique_ptr<TVacMon> monitor(new TVacMon());
   monitor->SetPortName(portName);
