@@ -1,6 +1,8 @@
+#include <TAxis.h>
 #include <unistd.h>
 
 #include <ctime>
+#include <fstream>
 #include <iostream>
 
 #include "TVacMon.hpp"
@@ -11,11 +13,13 @@ TVacMon::TVacMon()
   fLastCheckTime = time(nullptr);
 
   fGraph.reset(new TGraph());
-  fGraph->SetTitle("Pressure monitor;Time [UNIX time];Pressure [unit]");
+  fGraph->SetTitle("Pressure monitor;Time [UNIX time];Pressure [mbar]");
   fGraph->SetMaximum(5.e+2);
   fGraph->SetMinimum(5.e-8);
   fGraph->SetMarkerStyle(8);
   fGraph->SetMarkerColor(kRed);
+  fGraph->GetXaxis()->SetTimeDisplay(1);
+  fGraph->GetXaxis()->SetTimeFormat("%H:%M");
 
   fCanvas.reset(new TCanvas("canvas", "Pressure monitor"));
   fCanvas->SetLogy(kTRUE);
@@ -79,6 +83,8 @@ void TVacMon::Read()
       }
     }
   }
+
+  DataWrite();
 }
 
 bool TVacMon::CheckTime()
@@ -110,4 +116,15 @@ void TVacMon::PlotGraph()
   fCanvas->Update();
 }
 
-void TVacMon::DataWrite() {}
+void TVacMon::DataWrite()
+{
+  auto fileName = "monitor.log";
+  std::fstream fout(fileName, std::ios::app);
+
+  for (unsigned int i = 0; i < fData.size(); i++) {
+    fout << fData[i].TimeStamp << "\t" << fData[i].Pressure << "\n";
+  }
+
+  fout << std::endl;
+  fout.close();
+}
