@@ -10,28 +10,29 @@ TVacMon::TVacMon()
 {
 }
 
-TVacMon::~TVacMon() { fPort.Close(); }
+TVacMon::~TVacMon() { fPort->Close(); }
 
 void TVacMon::InitPort()
 {
-  fPort = SerialPort(fPortName);
+  fPort.reset(new SerialPort(fPortName));
+  // fPort = SerialPort(fPortName);
 
-  fPort.Open();
-  fPort.SetBaudRate(SerialPort::BaudRate::BAUD_9600);
-  fPort.SetCharSize(SerialPort::CharacterSize::CHAR_SIZE_8);
-  fPort.SetFlowControl(SerialPort::FlowControl::FLOW_CONTROL_NONE);
-  fPort.SetParity(SerialPort::Parity::PARITY_NONE);
-  fPort.SetNumOfStopBits(SerialPort::StopBits::STOP_BITS_1);
+  fPort->Open();
+  fPort->SetBaudRate(SerialPort::BaudRate::BAUD_9600);
+  fPort->SetCharSize(SerialPort::CharacterSize::CHAR_SIZE_8);
+  fPort->SetFlowControl(SerialPort::FlowControl::FLOW_CONTROL_NONE);
+  fPort->SetParity(SerialPort::Parity::PARITY_NONE);
+  fPort->SetNumOfStopBits(SerialPort::StopBits::STOP_BITS_1);
 
   std::string com = "PA1";
-  fPort.Write(com);
+  fPort->Write(com);
 }
 
 void TVacMon::Write()
 {
   while (fAcqFlag) {
-    if (CheckTime) {
-      fPort.WriteByte('\x05');
+    if (CheckTime()) {
+      fPort->WriteByte('\x05');
     }
 
     // The unit of timeinterval is second.
@@ -44,10 +45,11 @@ void TVacMon::Read()
 {
   bool readFlag = true;
   std::string buf{""};
+  const unsigned int timeout_ms = 25;  // timeout value in milliseconds
 
   while (fAcqFlag) {
     try {
-      auto c = port.ReadByte(timeout_ms);
+      auto c = fPort->ReadByte(timeout_ms);
       readFlag = true;
       buf += c;
     } catch (const SerialPort::ReadTimeout &timeOut) {

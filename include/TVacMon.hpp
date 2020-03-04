@@ -41,7 +41,8 @@ class TVacMon
   void Terminate() { fAcqFlag = false; };
 
  private:
-  SerialPort fPort;
+  std::unique_ptr<SerialPort> fPort;
+  // SerialPort fPort;
   std::string fPortName;
   bool fAcqFlag;
 
