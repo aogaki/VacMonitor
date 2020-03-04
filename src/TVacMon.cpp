@@ -9,6 +9,11 @@ TVacMon::TVacMon()
     : fPortName("/dev/ttyUSB0"), fAcqFlag(true), fTimeInterval(60)
 {
   fLastCheckTime = time(nullptr);
+
+  fGraph.reset(new TGraph());
+  fGraph->SetTitle("Pressure monitor;Time [UNIX time];Pressure [unit]");
+
+  fCanvas.reset(new TCanvas("canvas", "Pressure monitor"));
 }
 
 TVacMon::~TVacMon() { fPort->Close(); }
@@ -61,6 +66,8 @@ void TVacMon::Read()
           auto timeStamp = time(nullptr);
           std::cout << timeStamp << "\t" << pressure << std::endl;
           fData.push_back(MonResult(timeStamp, pressure));
+
+          PlotGraph();
         }
         buf.clear();
         readFlag = false;
@@ -80,6 +87,21 @@ bool TVacMon::CheckTime()
   }
 }
 
-void TVacMon::PlotGraph() {}
+void TVacMon::PlotGraph()
+{
+  auto start = 0;
+  constexpr auto plotLimit = 100;
+  const auto dataSize = fData.size();
+  if (dataSize > plotLimit) start = dataSize - plotLimit;
+
+  for (auto i = start; i < dataSize; i++) {
+    fGraph->SetPoint(i, fData[i].TimeStamp, fData[i].Pressure);
+  }
+
+  fCanvas->cd();
+  fGraph->Draw("AL");
+  fCanvas->Modified();
+  fCanvas->Update();
+}
 
 void TVacMon::DataWrite() {}
