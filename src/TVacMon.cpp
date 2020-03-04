@@ -18,6 +18,7 @@ TVacMon::TVacMon()
   fGraph->SetMarkerColor(kRed);
 
   fCanvas.reset(new TCanvas("canvas", "Pressure monitor"));
+  fCanvas->SetLogy(kTRUE);
 }
 
 TVacMon::~TVacMon() { fPort->Close(); }
