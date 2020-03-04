@@ -90,6 +90,7 @@ bool TVacMon::CheckTime()
 void TVacMon::PlotGraph()
 {
   unsigned int start = 0;
+
   constexpr unsigned int plotLimit = 100;
   const unsigned int dataSize = fData.size();
   if (dataSize > plotLimit) start = dataSize - plotLimit;
