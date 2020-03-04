@@ -1,3 +1,4 @@
+#include <TSystem.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <termios.h>
@@ -57,7 +58,7 @@ int main(int argc, char **argv)
   std::thread GetResults(&TVacMon::Read, monitor.get());
 
   while (true) {
-    // gSystem->ProcessEvents();  // This should be called at main thread
+    gSystem->ProcessEvents();  // This should be called at main thread
 
     if (kbhit()) {
       monitor->Terminate();
