@@ -31,14 +31,14 @@ void TVacMon::InitPort()
 
 void TVacMon::Write()
 {
+  fPort->WriteByte('\x05');
+
   while (fAcqFlag) {
     if (CheckTime()) {
       fPort->WriteByte('\x05');
     }
 
-    // The unit of timeinterval is second.
-    // 1 mili sec makes not big effect.
-    usleep(1000);
+    usleep(10);
   }
 }
 
