@@ -14,6 +14,8 @@ TVacMon::TVacMon()
   fGraph->SetTitle("Pressure monitor;Time [UNIX time];Pressure [unit]");
   fGraph->SetMaximum(5.e+2);
   fGraph->SetMinimum(5.e-8);
+  fGraph->SetMarkerStyle(8);
+  fGraph->SetMarkerColor(kRed);
 
   fCanvas.reset(new TCanvas("canvas", "Pressure monitor"));
 }
@@ -102,9 +104,9 @@ void TVacMon::PlotGraph()
   }
 
   fCanvas->cd();
-  fGraph->Draw("AL");
-  // fCanvas->Modified();
-  // fCanvas->Update();
+  fGraph->Draw("ALP");
+  fCanvas->Modified();
+  fCanvas->Update();
 }
 
 void TVacMon::DataWrite() {}
