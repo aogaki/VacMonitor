@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "TVacMon.hpp"
 
@@ -51,6 +52,22 @@ int main(int argc, char **argv)
   monitor->SetPortName(portName);
   monitor->SetTimeInterval(timeInterval);
   monitor->InitPort();
+
+  std::thread SendCommand(&TVacMon::Write, monitor.get());
+  std::thread GetResults(&TVacMon::Read, monitor.get());
+
+  while (true) {
+    // gSystem->ProcessEvents();  // This should be called at main thread
+
+    if (kbhit()) {
+      monitor->Terminate();
+      SendCommand.join();
+      GetResults.join();
+      break;
+    }
+
+    usleep(1000);
+  }
 
   return 0;
 }
