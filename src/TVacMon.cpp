@@ -13,7 +13,7 @@ TVacMon::TVacMon()
   fLastCheckTime = time(nullptr);
 
   fGraph.reset(new TGraph());
-  fGraph->SetTitle("Pressure monitor;Time [UNIX time];Pressure [mbar]");
+  fGraph->SetTitle("Pressure monitor;Time;Pressure [mbar]");
   fGraph->SetMaximum(5.e+2);
   fGraph->SetMinimum(5.e-8);
   fGraph->SetMarkerStyle(8);
