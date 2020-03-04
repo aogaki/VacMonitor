@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   auto portName = std::string("/dev/ttyUSB0");
   for (auto i = 1; i < argc; i++) {
     if (std::string(argv[i]) == "-t") {
-      timeInterval = atof(argv[++i]);
+      timeInterval = atoi(argv[++i]);
     }
     if (std::string(argv[i]) == "-p") {
       portName = std::string((argv[++i]));
