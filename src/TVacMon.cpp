@@ -8,6 +8,7 @@
 TVacMon::TVacMon()
     : fPortName("/dev/ttyUSB0"), fAcqFlag(true), fTimeInterval(60)
 {
+  fLastCheckTime = time(nullptr);
 }
 
 TVacMon::~TVacMon() { fPort->Close(); }
@@ -71,7 +72,7 @@ void TVacMon::Read()
 bool TVacMon::CheckTime()
 {
   auto now = time(nullptr);
-  if (fLastCheckTime - now > fTimeInterval) {
+  if (now - fLastCheckTime > fTimeInterval) {
     fLastCheckTime = now;
     return true;
   } else {
