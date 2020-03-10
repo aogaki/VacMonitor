@@ -5,8 +5,10 @@
 #include <SerialStream.h>
 #include <TCanvas.h>
 #include <TGraph.h>
+#include <THttpServer.h>
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -42,8 +44,8 @@ class TVacMon
 
  private:
   std::unique_ptr<SerialPort> fPort;
-  // SerialPort fPort;
   std::string fPortName;
+
   bool fAcqFlag;
 
   bool CheckTime();
@@ -51,12 +53,15 @@ class TVacMon
   int fLastCheckTime;
 
   void PlotGraph();
+  std::unique_ptr<THttpServer> fServer;
   std::unique_ptr<TGraph> fGraph;
   std::unique_ptr<TCanvas> fCanvas;
   std::vector<MonResult> fData;
+  std::vector<MonResult> fBuffer;
 
   // Data output is needed.  Ask Anukul what he want
   void DataWrite();
+  std::mutex fDataWriteMutex;
 };
 
 #endif

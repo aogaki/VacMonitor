@@ -23,6 +23,8 @@ TVacMon::TVacMon()
 
   fCanvas.reset(new TCanvas("canvas", "Pressure monitor"));
   fCanvas->SetLogy(kTRUE);
+
+  fServer.reset(new THttpServer());
 }
 
 TVacMon::~TVacMon() { fPort->Close(); }
@@ -73,13 +75,17 @@ void TVacMon::Read()
           auto start = buf.find_first_of(',') + 1;  // next of ","
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
-          std::cout << timeStamp << "\t" << pressure << std::endl;
           fData.push_back(MonResult(timeStamp, pressure));
 
           PlotGraph();
+
+          std::lock_guard<std::mutex> lock(fDataWriteMutex);
+          fBuffer.push_back(MonResult(timeStamp, pressure));
         }
         buf.clear();
         readFlag = false;
+
+        DataWrite();
       }
     }
   }
@@ -118,13 +124,16 @@ void TVacMon::PlotGraph()
 
 void TVacMon::DataWrite()
 {
-  auto fileName = "monitor.log";
-  std::fstream fout(fileName, std::ios::app);
+  if (!fBuffer.empty()) {
+    auto fileName = "monitor.log";
+    std::fstream fout(fileName, std::ios::app);
 
-  for (unsigned int i = 0; i < fData.size(); i++) {
-    fout << fData[i].TimeStamp << "\t" << fData[i].Pressure << "\n";
+    for (unsigned int i = 0; i < fBuffer.size(); i++) {
+      fout << fBuffer[i].TimeStamp << "\t" << fBuffer[i].Pressure << std::endl;
+    }
+
+    fout.close();
+    std::lock_guard<std::mutex> lock(fDataWriteMutex);
+    fBuffer.clear();
   }
-
-  fout << std::endl;
-  fout.close();
 }

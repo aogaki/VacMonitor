@@ -57,6 +57,7 @@ target_link_libraries(vac-mon
   ${ROOT_LIBRARIES}
   pthread
   serial
+  RHTTP
 )
 
 add_custom_target(run
