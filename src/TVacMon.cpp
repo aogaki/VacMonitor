@@ -85,7 +85,7 @@ void TVacMon::Read()
         buf.clear();
         readFlag = false;
 
-        DataWrite();
+        if (fBuffer.size() > 10) DataWrite();
       }
     }
   }
