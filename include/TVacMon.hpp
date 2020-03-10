@@ -7,7 +7,14 @@
 #include <TGraph.h>
 #include <THttpServer.h>
 
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/builder/stream/helpers.hpp>
+#include <bsoncxx/json.hpp>
 #include <memory>
+#include <mongocxx/client.hpp>
+#include <mongocxx/pool.hpp>
+#include <mongocxx/stdx.hpp>
+#include <mongocxx/uri.hpp>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -32,6 +39,9 @@ class TVacMon
   TVacMon();
   ~TVacMon();
 
+  // In this case, Write and Read are not needed to separate as thread.
+  // But, for future re-use, Now separated and running on the different
+  // threads made at main.cpp
   void InitPort();
   void Write();
   void Read();
@@ -59,9 +69,11 @@ class TVacMon
   std::vector<MonResult> fData;
   std::vector<MonResult> fBuffer;
 
-  // Data output is needed.  Ask Anukul what he want
   void DataWrite();
   std::mutex fDataWriteMutex;
+
+  void DataUpload();
+  mongocxx::pool fPool;
 };
 
 #endif

@@ -8,7 +8,10 @@
 #include "TVacMon.hpp"
 
 TVacMon::TVacMon()
-    : fPortName("/dev/ttyUSB0"), fAcqFlag(true), fTimeInterval(60)
+    : fPortName("/dev/ttyUSB0"),
+      fAcqFlag(true),
+      fTimeInterval(60),
+      fPool(mongocxx::uri("mongodb://daq:nim2camac@172.18.4.56/ELIADE"))
 {
   fLastCheckTime = time(nullptr);
 
@@ -125,6 +128,9 @@ void TVacMon::PlotGraph()
 void TVacMon::DataWrite()
 {
   if (!fBuffer.empty()) {
+    // Also upload the data
+    UploadData();
+
     auto fileName = "monitor.log";
     std::fstream fout(fileName, std::ios::app);
 
@@ -135,5 +141,19 @@ void TVacMon::DataWrite()
     fout.close();
     std::lock_guard<std::mutex> lock(fDataWriteMutex);
     fBuffer.clear();
+  }
+}
+
+void TVacMon::UploadData()
+{
+  auto conn = fPool.acquire();
+  auto collection = (*conn)["ELIADE"]["VacMon"];
+
+  bsoncxx::builder::stream::document buf{};
+
+  for (unsigned int i = 0; i < fBuffer.size(); i++) {
+    buf << "time" << fBuffer[i].TimeStamp << "pressure" << fBuffer[i].Pressure;
+    collection.insert_one(buf.view());
+    buf.clear();
   }
 }

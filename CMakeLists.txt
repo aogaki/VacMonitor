@@ -32,6 +32,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+find_package(libmongocxx REQUIRED)
+
 if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 endif()
@@ -50,11 +52,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/include
                     ${ROOT_INCLUDE_DIR}
                     /usr/include/libserial/
+                    ${LIBMONGOCXX_INCLUDE_DIRS}
                   )
 link_directories(${ROOT_LIBRARY_DIR})
 
 target_link_libraries(vac-mon
   ${ROOT_LIBRARIES}
+  ${LIBMONGOCXX_LIBRARIES}
   pthread
   serial
   RHTTP
