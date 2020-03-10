@@ -129,7 +129,7 @@ void TVacMon::DataWrite()
 {
   if (!fBuffer.empty()) {
     // Also upload the data
-    UploadData();
+    DataUpload();
 
     auto fileName = "monitor.log";
     std::fstream fout(fileName, std::ios::app);
@@ -144,7 +144,7 @@ void TVacMon::DataWrite()
   }
 }
 
-void TVacMon::UploadData()
+void TVacMon::DataUpload()
 {
   auto conn = fPool.acquire();
   auto collection = (*conn)["ELIADE"]["VacMon"];
