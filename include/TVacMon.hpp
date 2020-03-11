@@ -39,9 +39,6 @@ class TVacMon
   TVacMon();
   ~TVacMon();
 
-  // In this case, Write and Read are not needed to separate as thread.
-  // But, for future re-use, Now separated and running on the different
-  // threads made at main.cpp
   void InitPort();
   void Write();
   void Read();
@@ -63,6 +60,7 @@ class TVacMon
   int fLastCheckTime;
 
   void PlotGraph();
+  std::mutex fPlotGraphMutex;
   std::unique_ptr<THttpServer> fServer;
   std::unique_ptr<TGraph> fGraph;
   std::unique_ptr<TCanvas> fCanvas;

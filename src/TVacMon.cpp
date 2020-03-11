@@ -119,6 +119,7 @@ void TVacMon::PlotGraph()
     fGraph->SetPoint(i, fData[i].TimeStamp, fData[i].Pressure);
   }
 
+  std::lock_guard<std::mutex> lock(fPlotGraphMutex);
   fCanvas->cd();
   fGraph->Draw("ALP");
   fCanvas->Modified();
