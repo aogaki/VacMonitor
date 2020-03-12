@@ -3,9 +3,6 @@
 
 #include <SerialPort.h>
 #include <SerialStream.h>
-#include <TCanvas.h>
-#include <TGraph.h>
-#include <THttpServer.h>
 
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/builder/stream/helpers.hpp>
@@ -59,12 +56,6 @@ class TVacMon
   int fTimeInterval;
   int fLastCheckTime;
 
-  void PlotGraph();
-  std::mutex fPlotGraphMutex;
-  std::unique_ptr<THttpServer> fServer;
-  std::unique_ptr<TGraph> fGraph;
-  std::unique_ptr<TCanvas> fCanvas;
-  std::vector<MonResult> fData;
   std::vector<MonResult> fBuffer;
 
   void DataWrite();

@@ -1,4 +1,3 @@
-#include <TAxis.h>
 #include <unistd.h>
 
 #include <ctime>
@@ -14,20 +13,6 @@ TVacMon::TVacMon()
       fPool(mongocxx::uri("mongodb://daq:nim2camac@172.18.4.56/ELIADE"))
 {
   fLastCheckTime = time(nullptr);
-
-  fGraph.reset(new TGraph());
-  fGraph->SetTitle("Pressure monitor;Time;Pressure [mbar]");
-  fGraph->SetMaximum(5.e+2);
-  fGraph->SetMinimum(5.e-8);
-  fGraph->SetMarkerStyle(8);
-  fGraph->SetMarkerColor(kRed);
-  fGraph->GetXaxis()->SetTimeDisplay(1);
-  fGraph->GetXaxis()->SetTimeFormat("%H:%M");
-
-  fCanvas.reset(new TCanvas("canvas", "Pressure monitor"));
-  fCanvas->SetLogy(kTRUE);
-
-  fServer.reset(new THttpServer());
 }
 
 TVacMon::~TVacMon() { fPort->Close(); }
@@ -106,25 +91,6 @@ bool TVacMon::CheckTime()
   } else {
     return false;
   }
-}
-
-void TVacMon::PlotGraph()
-{
-  unsigned int start = 0;
-
-  constexpr unsigned int plotLimit = 100;
-  const unsigned int dataSize = fData.size();
-  if (dataSize > plotLimit) start = dataSize - plotLimit;
-
-  for (unsigned int i = start; i < dataSize; i++) {
-    fGraph->SetPoint(i, fData[i].TimeStamp, fData[i].Pressure);
-  }
-
-  std::lock_guard<std::mutex> lock(fPlotGraphMutex);
-  fCanvas->cd();
-  fGraph->Draw("ALP");
-  fCanvas->Modified();
-  fCanvas->Update();
 }
 
 void TVacMon::DataWrite()

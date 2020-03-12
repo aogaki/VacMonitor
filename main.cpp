@@ -1,5 +1,3 @@
-#include <TApplication.h>
-#include <TSystem.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <termios.h>
@@ -50,8 +48,6 @@ int main(int argc, char **argv)
     }
   }
 
-  TApplication app("testApp", &argc, argv);
-
   std::unique_ptr<TVacMon> monitor(new TVacMon());
   monitor->SetPortName(portName);
   monitor->SetTimeInterval(timeInterval);
@@ -61,8 +57,6 @@ int main(int argc, char **argv)
   std::thread GetResults(&TVacMon::Read, monitor.get());
 
   while (true) {
-    gSystem->ProcessEvents();  // This should be called at main thread
-
     if (kbhit()) {
       monitor->Terminate();
       SendCommand.join();
