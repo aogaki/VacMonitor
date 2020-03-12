@@ -63,11 +63,7 @@ void TVacMon::Read()
           auto start = buf.find_first_of(',') + 1;  // next of ","
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
-          fData.push_back(MonResult(timeStamp, pressure));
 
-          PlotGraph();
-
-          std::lock_guard<std::mutex> lock(fDataWriteMutex);
           fBuffer.push_back(MonResult(timeStamp, pressure));
         }
         buf.clear();
@@ -107,7 +103,6 @@ void TVacMon::DataWrite()
     }
 
     fout.close();
-    std::lock_guard<std::mutex> lock(fDataWriteMutex);
     fBuffer.clear();
   }
 }

@@ -59,7 +59,6 @@ class TVacMon
   std::vector<MonResult> fBuffer;
 
   void DataWrite();
-  std::mutex fDataWriteMutex;
 
   void DataUpload();
   mongocxx::pool fPool;
