@@ -59,8 +59,7 @@ void TVacMon::Read()
     } catch (const SerialPort::ReadTimeout &timeOut) {
       if (readFlag) {
         if (buf != "") {
-          if (buf.find_first_of(',') != std::string::npos)
-            std::cout << buf.size() << std::endl;
+          if (buf[0] == ACK) std::cout << "hit" << std::endl;
           auto start = buf.find_first_of(',') + 1;  // next of ","
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
