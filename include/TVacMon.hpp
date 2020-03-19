@@ -18,16 +18,21 @@
 
 using namespace LibSerial;
 
+constexpr char ENQ = '\x05';
+constexpr char ACK = '\x06';
+
 struct MonResult {
  public:
-  MonResult(time_t t, double p)
+  MonResult(time_t t, double p, std::string name = "default")
   {
     TimeStamp = t;
     Pressure = p;
+    SensorName = name;
   };
 
   time_t TimeStamp;
   double Pressure;
+  std::string SensorName;
 };
 
 class TVacMon
@@ -37,8 +42,9 @@ class TVacMon
   ~TVacMon();
 
   void InitPort();
-  void Write();
+  void Write(std::string com = "PA1");
   void Read();
+  bool CheckACK();
 
   void SetPortName(std::string name) { fPortName = name; };
 

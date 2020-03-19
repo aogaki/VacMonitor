@@ -28,18 +28,17 @@ void TVacMon::InitPort()
   fPort->SetFlowControl(SerialPort::FlowControl::FLOW_CONTROL_NONE);
   fPort->SetParity(SerialPort::Parity::PARITY_NONE);
   fPort->SetNumOfStopBits(SerialPort::StopBits::STOP_BITS_1);
-
-  std::string com = "PA1";
-  fPort->Write(com);
 }
 
-void TVacMon::Write()
+void TVacMon::Write(std::string com)
 {
-  fPort->WriteByte('\x05');
+  fPort->Write(com);
+  fPort->WriteByte(ENQ);
 
   while (fAcqFlag) {
     if (CheckTime()) {
-      fPort->WriteByte('\x05');
+      fPort->Write(com);
+      fPort->WriteByte(ENQ);
     }
 
     usleep(10);
@@ -60,6 +59,8 @@ void TVacMon::Read()
     } catch (const SerialPort::ReadTimeout &timeOut) {
       if (readFlag) {
         if (buf != "") {
+          if (buf.find_first_of(',') != std::string::npos)
+            std::cout << buf << std::endl;
           auto start = buf.find_first_of(',') + 1;  // next of ","
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
