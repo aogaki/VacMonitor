@@ -54,13 +54,19 @@ int main(int argc, char **argv)
   monitor->InitPort();
 
   std::thread GetPA1(&TVacMon::Write, monitor.get(), "PA1");
+<<<<<<< HEAD
   std::thread GetResults(&TVacMon::Read, monitor.get());
+=======
+>>>>>>> 7e8d3a3f440ae62148f210ceaf137e448ec0ffb4
 
   while (true) {
     if (kbhit()) {
       monitor->Terminate();
       GetPA1.join();
+<<<<<<< HEAD
       GetResults.join();
+=======
+>>>>>>> 7e8d3a3f440ae62148f210ceaf137e448ec0ffb4
       break;
     }
 
