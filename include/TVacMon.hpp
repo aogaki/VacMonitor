@@ -20,14 +20,16 @@ using namespace LibSerial;
 
 struct MonResult {
  public:
-  MonResult(time_t t, double p)
+  MonResult(time_t t, double p, std::string name = "default")
   {
     TimeStamp = t;
     Pressure = p;
+    SensorName = name;
   };
 
   time_t TimeStamp;
   double Pressure;
+  std::string SensorName;
 };
 
 class TVacMon

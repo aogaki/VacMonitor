@@ -35,10 +35,13 @@ void TVacMon::InitPort()
 
 void TVacMon::Write()
 {
+  std::string com = "PA1";
+  fPort->Write(com);
   fPort->WriteByte('\x05');
 
   while (fAcqFlag) {
     if (CheckTime()) {
+      fPort->Write(com);
       fPort->WriteByte('\x05');
     }
 
@@ -60,6 +63,7 @@ void TVacMon::Read()
     } catch (const SerialPort::ReadTimeout &timeOut) {
       if (readFlag) {
         if (buf != "") {
+          std::cout << buf << std::endl;
           auto start = buf.find_first_of(',') + 1;  // next of ","
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
