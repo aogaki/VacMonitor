@@ -57,6 +57,7 @@ class TVacMon
 
   bool fAcqFlag;
   bool fReadWaitFlag;
+  std::string fSensorName;
 
   bool CheckTime();
   int fTimeInterval;

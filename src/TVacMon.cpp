@@ -35,9 +35,16 @@ void TVacMon::SendCommand()
   Write("PA1");
 
   while (fAcqFlag) {
-    if (CheckTime()) {
+    if (CheckTime() && !fReadWaitFlag) {
       fReadWaitFlag = true;
-      Write("PA1");
+      fSensorName = "PA1";
+      Write(fSensorName);
+      while (fReadWaitFlag) {
+        usleep(1);
+      }
+      fReadWaitFlag = true;
+      fSensorName = "PA2";
+      Write(fSensorName);
       while (fReadWaitFlag) {
         usleep(1);
       }
@@ -112,7 +119,8 @@ void TVacMon::DataWrite()
     std::fstream fout(fileName, std::ios::app);
 
     for (unsigned int i = 0; i < fBuffer.size(); i++) {
-      fout << fBuffer[i].TimeStamp << "\t" << fBuffer[i].Pressure << std::endl;
+      fout << fBuffer[i].TimeStamp << "\t" << fBuffer[i].Pressure << "\t"
+           << fSensorName << std::endl;
     }
 
     fout.close();
@@ -128,7 +136,8 @@ void TVacMon::DataUpload()
   bsoncxx::builder::stream::document buf{};
 
   for (unsigned int i = 0; i < fBuffer.size(); i++) {
-    buf << "time" << fBuffer[i].TimeStamp << "pressure" << fBuffer[i].Pressure;
+    buf << "time" << fBuffer[i].TimeStamp << "pressure" << fBuffer[i].Pressure
+        << name << fSensorName;
     collection.insert_one(buf.view());
     buf.clear();
   }
