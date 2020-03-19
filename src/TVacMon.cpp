@@ -36,7 +36,11 @@ void TVacMon::SendCommand()
 
   while (fAcqFlag) {
     if (CheckTime()) {
+      fReadWaitFlag = true;
       Write("PA1");
+      while (fReadWaitFlag) {
+        usleep(1);
+      }
     }
 
     usleep(10);
@@ -74,6 +78,7 @@ void TVacMon::Read()
 
         // if (fBuffer.size() > 10) DataWrite();
         DataWrite();
+        fReadWaitFlag = false;
       }
       buf.clear();
       readFlag = false;
