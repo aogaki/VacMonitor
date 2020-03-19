@@ -28,20 +28,21 @@ void TVacMon::InitPort()
   fPort->SetFlowControl(SerialPort::FlowControl::FLOW_CONTROL_NONE);
   fPort->SetParity(SerialPort::Parity::PARITY_NONE);
   fPort->SetNumOfStopBits(SerialPort::StopBits::STOP_BITS_1);
-
-  std::string com = "PA1";
-  fPort->Write(com);
 }
 
 void TVacMon::Write(std::string com)
 {
   fPort->Write(com);
+  Read();
   fPort->WriteByte(ENQ);
+  Read();
 
   while (fAcqFlag) {
     if (CheckTime()) {
       fPort->Write(com);
+      Read();
       fPort->WriteByte(ENQ);
+      Read();
     }
 
     usleep(10);
@@ -54,28 +55,26 @@ void TVacMon::Read()
   std::string buf{""};
   const unsigned int timeout_ms = 25;  // timeout value in milliseconds
 
-  while (fAcqFlag) {
-    try {
-      auto c = fPort->ReadByte(timeout_ms);
-      readFlag = true;
-      buf += c;
-    } catch (const SerialPort::ReadTimeout &timeOut) {
-      if (readFlag) {
-        if (buf != "") {
-          if (buf.find_first_of(',') != std::string::npos)
-            std::cout << buf << std::endl;
-          auto start = buf.find_first_of(',') + 1;  // next of ","
-          auto pressure = std::stod(buf.substr(start, buf.size() - start));
-          auto timeStamp = time(nullptr);
+  try {
+    auto c = fPort->ReadByte(timeout_ms);
+    readFlag = true;
+    buf += c;
+  } catch (const SerialPort::ReadTimeout &timeOut) {
+    if (readFlag) {
+      if (buf != "") {
+        if (buf.find_first_of(',') != std::string::npos)
+          std::cout << buf << std::endl;
+        auto start = buf.find_first_of(',') + 1;  // next of ","
+        auto pressure = std::stod(buf.substr(start, buf.size() - start));
+        auto timeStamp = time(nullptr);
 
-          fBuffer.push_back(MonResult(timeStamp, pressure));
-        }
-        buf.clear();
-        readFlag = false;
-
-        // if (fBuffer.size() > 10) DataWrite();
-        DataWrite();
+        fBuffer.push_back(MonResult(timeStamp, pressure));
       }
+      buf.clear();
+      readFlag = false;
+
+      // if (fBuffer.size() > 10) DataWrite();
+      DataWrite();
     }
   }
 

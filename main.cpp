@@ -53,14 +53,14 @@ int main(int argc, char **argv)
   monitor->SetTimeInterval(timeInterval);
   monitor->InitPort();
 
-  std::thread SendCommand(&TVacMon::Write, monitor.get(), "PA1");
-  std::thread GetResults(&TVacMon::Read, monitor.get());
+  std::thread GetPA1(&TVacMon::Write, monitor.get(), "PA1");
+  std::thread GetPA2(&TVacMon::Write, monitor.get(), "PA2");
 
   while (true) {
     if (kbhit()) {
       monitor->Terminate();
-      SendCommand.join();
-      GetResults.join();
+      GetPA1.join();
+      GetPA2.join();
       break;
     }
 
