@@ -39,12 +39,15 @@ void TVacMon::SendCommand()
       fReadWaitFlag = true;
       fSensorName = "PA1";
       Write(fSensorName);
+
       while (fReadWaitFlag) {
         usleep(1);
       }
+
       fReadWaitFlag = true;
       fSensorName = "PA2";
       Write(fSensorName);
+
       while (fReadWaitFlag) {
         usleep(1);
       }
@@ -119,8 +122,8 @@ void TVacMon::DataWrite()
     std::fstream fout(fileName, std::ios::app);
 
     for (unsigned int i = 0; i < fBuffer.size(); i++) {
-      std::cout << fBuffer[i].TimeStamp << "\t" << fBuffer[i].Pressure << "\t"
-                << fSensorName << std::endl;
+      fout << fBuffer[i].TimeStamp << "\t" << fBuffer[i].Pressure << "\t"
+           << fSensorName << std::endl;
     }
 
     fout.close();
