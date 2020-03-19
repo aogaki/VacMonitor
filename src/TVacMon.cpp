@@ -119,8 +119,8 @@ void TVacMon::DataWrite()
     std::fstream fout(fileName, std::ios::app);
 
     for (unsigned int i = 0; i < fBuffer.size(); i++) {
-      fout << fBuffer[i].TimeStamp << "\t" << fBuffer[i].Pressure << "\t"
-           << fSensorName << std::endl;
+      std::cout << fBuffer[i].TimeStamp << "\t" << fBuffer[i].Pressure << "\t"
+                << fSensorName << std::endl;
     }
 
     fout.close();
@@ -137,7 +137,7 @@ void TVacMon::DataUpload()
 
   for (unsigned int i = 0; i < fBuffer.size(); i++) {
     buf << "time" << fBuffer[i].TimeStamp << "pressure" << fBuffer[i].Pressure
-        << name << fSensorName;
+        << "name" << fSensorName;
     collection.insert_one(buf.view());
     buf.clear();
   }
