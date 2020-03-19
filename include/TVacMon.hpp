@@ -42,9 +42,8 @@ class TVacMon
   ~TVacMon();
 
   void InitPort();
-  void Write(std::string com = "PA1");
+  void SendCommand();
   void Read();
-  bool CheckACK();
 
   void SetPortName(std::string name) { fPortName = name; };
 
@@ -57,12 +56,15 @@ class TVacMon
   std::string fPortName;
 
   bool fAcqFlag;
+  bool fReadWaitFlag;
 
   bool CheckTime();
   int fTimeInterval;
   int fLastCheckTime;
 
   std::vector<MonResult> fBuffer;
+
+  void Write(std::string com = "PA1");
 
   void DataWrite();
 

@@ -30,19 +30,23 @@ void TVacMon::InitPort()
   fPort->SetNumOfStopBits(SerialPort::StopBits::STOP_BITS_1);
 }
 
-void TVacMon::Write(std::string com)
+void TVacMon::SendCommand()
 {
-  fPort->Write(com);
-  fPort->WriteByte(ENQ);
+  Write("PA1");
 
   while (fAcqFlag) {
     if (CheckTime()) {
-      fPort->Write(com);
-      fPort->WriteByte(ENQ);
+      Write("PA1");
     }
 
     usleep(10);
   }
+}
+
+void TVacMon::Write(std::string com)
+{
+  fPort->Write(com);
+  fPort->WriteByte(ENQ);
 }
 
 void TVacMon::Read()
@@ -59,7 +63,6 @@ void TVacMon::Read()
     } catch (const SerialPort::ReadTimeout &timeOut) {
       if (readFlag) {
         if (buf != "") {
-          if (buf[0] == ACK) std::cout << "hit" << std::endl;
           auto start = buf.find_first_of(',') + 1;  // next of ","
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
