@@ -44,13 +44,13 @@ void TVacMon::SendCommand()
         usleep(1);
       }
 
-      fReadWaitFlag = true;
-      fSensorName = "PA2";
-      Write(fSensorName);
-
-      while (fReadWaitFlag) {
-        usleep(1);
-      }
+      // fReadWaitFlag = true;
+      // fSensorName = "PA2";
+      // Write(fSensorName);
+      //
+      // while (fReadWaitFlag) {
+      //   usleep(1);
+      // }
     }
 
     usleep(10);
