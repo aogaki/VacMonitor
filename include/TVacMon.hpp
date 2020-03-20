@@ -20,6 +20,7 @@ using namespace LibSerial;
 
 constexpr char ENQ = '\x05';
 constexpr char ACK = '\x06';
+constexpr char NAK = '\x15';
 
 struct MonResult {
  public:

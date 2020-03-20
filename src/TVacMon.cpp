@@ -38,8 +38,12 @@ void TVacMon::SendCommand()
     if (CheckTime() && !fReadWaitFlag) {
       fReadWaitFlag = true;
       fSensorName = "PA1";
-      Write(fSensorName);
-
+      // Write(fSensorName);
+      fPort->Write(fSensorName);
+      while (fReadWaitFlag) {
+        usleep(1);
+      }
+      fPort->WriteByte(ENQ);
       while (fReadWaitFlag) {
         usleep(1);
       }
@@ -77,8 +81,8 @@ void TVacMon::Read()
     } catch (const SerialPort::ReadTimeout &timeOut) {
       if (readFlag) {
         if (buf != "") {
+          std::cout << buf[0] << std::endl;
           auto start = buf.find_first_of(',') + 1;  // next of ","
-          std::cout << start << std::endl;
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
 
