@@ -78,7 +78,7 @@ void TVacMon::Read()
       if (readFlag) {
         if (buf != "") {
           auto start = buf.find_first_of(',') + 1;  // next of ","
-          if (start == std::string::npos) std::cout << "Error" << std::endl;
+          if (start == std::string::npos) std::cout << start << std::endl;
           auto pressure = std::stod(buf.substr(start, buf.size() - start));
           auto timeStamp = time(nullptr);
 
