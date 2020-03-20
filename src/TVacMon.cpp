@@ -32,29 +32,17 @@ void TVacMon::InitPort()
 
 void TVacMon::SendCommand()
 {
-  Write("PA1");
+  fSensorName = "PA1";
+  Write(fSensorName);
+  fSensorName = "PA2";
+  Write(fSensorName);
 
   while (fAcqFlag) {
     if (CheckTime() && !fReadWaitFlag) {
-      fReadWaitFlag = true;
       fSensorName = "PA1";
-      // Write(fSensorName);
-      fPort->Write(fSensorName);
-      while (fReadWaitFlag) {
-        usleep(1);
-      }
-      fPort->WriteByte(ENQ);
-      while (fReadWaitFlag) {
-        usleep(1);
-      }
-
-      // fReadWaitFlag = true;
-      // fSensorName = "PA2";
-      // Write(fSensorName);
-      //
-      // while (fReadWaitFlag) {
-      //   usleep(1);
-      // }
+      Write(fSensorName);
+      fSensorName = "PA2";
+      Write(fSensorName);
     }
 
     usleep(10);
@@ -63,8 +51,17 @@ void TVacMon::SendCommand()
 
 void TVacMon::Write(std::string com)
 {
+  com += '\n';  // Need CR or LF
+  fReadWaitFlag = true;
   fPort->Write(com);
+  while (fReadWaitFlag) {
+    usleep(1);
+  }
+  fReadWaitFlag = true;
   fPort->WriteByte(ENQ);
+  while (fReadWaitFlag) {
+    usleep(1);
+  }
 }
 
 void TVacMon::Read()
@@ -81,12 +78,19 @@ void TVacMon::Read()
     } catch (const SerialPort::ReadTimeout &timeOut) {
       if (readFlag) {
         if (buf != "") {
-          std::cout << buf[0] << std::endl;
-          auto start = buf.find_first_of(',') + 1;  // next of ","
-          auto pressure = std::stod(buf.substr(start, buf.size() - start));
-          auto timeStamp = time(nullptr);
+          if (buf[0] == ACK) {
+            // Do nothing.  This is the expected state before getting value(else case)
+          } else if (buf[0] == NAK) {
+            std::cerr << "The communication is failed with " << fSensorName
+                      << std::endl;
+            exit(0);
+          } else {
+            auto start = buf.find_first_of(',') + 1;  // next of ","
+            auto pressure = std::stod(buf.substr(start, buf.size() - start));
+            auto timeStamp = time(nullptr);
 
-          fBuffer.push_back(MonResult(timeStamp, pressure));
+            fBuffer.push_back(MonResult(timeStamp, pressure));
+          }
         }
         buf.clear();
         readFlag = false;
