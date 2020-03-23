@@ -10,7 +10,8 @@ TVacMon::TVacMon()
     : fPortName("/dev/ttyUSB0"),
       fAcqFlag(true),
       fTimeInterval(60),
-      fPool(mongocxx::uri("mongodb://daq:nim2camac@172.18.4.56/ELIADE"))
+      // fPool(mongocxx::uri("mongodb://daq:nim2camac@172.18.4.56/ELIADE"))
+      fPool(mongocxx::uri("mongodb://172.18.7.22/ELIADE"))
 {
   fLastCheckTime = time(nullptr);
 }
