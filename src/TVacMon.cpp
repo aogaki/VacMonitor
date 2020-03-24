@@ -87,6 +87,7 @@ void TVacMon::Read()
             exit(0);
           } else {
             auto start = buf.find_first_of(',') + 1;  // next of ","
+            std::cout << start << std::endl;
             auto pressure = std::stod(buf.substr(start, buf.size() - start));
             auto timeStamp = time(nullptr);
 
