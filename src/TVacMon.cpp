@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <unistd.h>
 
 #include <ctime>
@@ -86,12 +87,17 @@ void TVacMon::Read()
                       << std::endl;
             exit(0);
           } else {
-            auto start = buf.find_first_of(',') + 1;  // next of ","
-            if (start >= 2) {
+            try {
+              auto start = buf.find_first_of(',') + 1;  // next of ","
               auto pressure = std::stod(buf.substr(start, buf.size() - start));
               auto timeStamp = time(nullptr);
 
               fBuffer.push_back(MonResult(timeStamp, pressure));
+            } catch (const std::invalid_argument &e) {
+              for (auto i = 0; i < buf.size(); i++) {
+                printf("%d ", buf[i]);
+              }
+              printf("\n");
             }
           }
         }
