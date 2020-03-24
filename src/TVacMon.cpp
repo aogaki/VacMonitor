@@ -94,7 +94,7 @@ void TVacMon::Read()
 
               fBuffer.push_back(MonResult(timeStamp, pressure));
             } catch (const std::invalid_argument &e) {
-              for (auto i = 0; i < buf.size(); i++) {
+              for (unsined int i = 0; i < buf.size(); i++) {
                 printf("%d ", buf[i]);
               }
               printf("\n");
