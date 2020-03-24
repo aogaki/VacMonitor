@@ -94,6 +94,8 @@ void TVacMon::Read()
 
               fBuffer.push_back(MonResult(timeStamp, pressure));
             } catch (const std::invalid_argument &e) {
+              // I forget how to print char as int by std::cout
+              printf("Got the stod error.\n");
               for (unsigned int i = 0; i < buf.size(); i++) {
                 printf("%d ", buf[i]);
               }
