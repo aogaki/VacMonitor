@@ -59,14 +59,20 @@ void TVacMon::Write(std::string com)
   auto counter = 0;
   while (fReadWaitFlag) {
     usleep(1);
-    if (counter++ > 1000 * 1000) break;
+    if (counter++ > 1000 * 1000) {
+      fReadWaitFlag = false;
+      break;
+    }
   }
   fReadWaitFlag = true;
   fPort->WriteByte(ENQ);
   counter = 0;
   while (fReadWaitFlag) {
     usleep(1);
-    if (counter++ > 1000 * 1000) break;
+    if (counter++ > 1000 * 1000) {
+      fReadWaitFlag = false;
+      break;
+    }
   }
 }
 
