@@ -56,13 +56,17 @@ void TVacMon::Write(std::string com)
   com += '\n';  // Need CR or LF
   fReadWaitFlag = true;
   fPort->Write(com);
+  auto counter = 0;
   while (fReadWaitFlag) {
     usleep(1);
+    if (counter++ > 1000 * 1000) break;
   }
   fReadWaitFlag = true;
   fPort->WriteByte(ENQ);
+  counter = 0;
   while (fReadWaitFlag) {
     usleep(1);
+    if (counter++ > 1000 * 1000) break;
   }
 }
 
