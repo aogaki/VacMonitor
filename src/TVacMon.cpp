@@ -134,7 +134,7 @@ void TVacMon::Read()
 bool TVacMon::CheckTime()
 {
   auto now = time(nullptr);
-  if (now - fLastCheckTime > fTimeInterval) {
+  if (now - fLastCheckTime >= fTimeInterval) {
     fLastCheckTime = now;
     return true;
   } else {
